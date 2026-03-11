@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MaintenancePro — Jadwal</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04080F;--card:rgba(10,20,40,0.85);
+  --cyan:#00D4FF;--blue:#0055FF;--green:#00FF94;
+  --orange:#FF8C00;--red:#FF3B5C;--yellow:#FFD600;
+  --text1:#E8F4FF;--text2:#7A9CC0;--text3:#3D5A7A;
+  --border:rgba(0,212,255,0.1);--border2:rgba(0,212,255,0.25);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text1);min-height:100vh;overflow-x:hidden}
+.bg-base{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 50% at 20% 0%,rgba(0,85,255,0.12) 0%,transparent 60%),linear-gradient(180deg,#04080F,#060D18);}
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);background-size:48px 48px;}
+
+/* NAV */
+.topnav{position:fixed;top:0;left:0;right:0;z-index:100;height:60px;background:rgba(4,8,15,0.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;}
+.back-btn{width:36px;height:36px;border-radius:10px;background:rgba(0,212,255,0.08);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:var(--cyan);transition:all 0.2s;flex-shrink:0;}
+.back-btn:hover{background:rgba(0,212,255,0.15)}
+.nav-info{flex:1}
+.nav-title{font-size:16px;font-weight:800;letter-spacing:1.5px;background:linear-gradient(90deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-sub{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:1px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
+.nav-time{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);background:rgba(0,212,255,0.06);border:1px solid var(--border);padding:4px 10px;border-radius:8px;}
+
+/* MAIN */
+.main{position:relative;z-index:10;padding:76px 16px 30px;max-width:480px;margin:0 auto}
+
+/* SHEET TABS */
+.sheet-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.sheet-tabs::-webkit-scrollbar{display:none}
+.sheet-tab{flex-shrink:0;padding:7px 13px;border-radius:20px;cursor:pointer;border:1px solid var(--border);background:rgba(10,20,40,0.6);font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--text3);letter-spacing:0.5px;transition:all 0.2s;white-space:nowrap;}
+.sheet-tab.active{background:linear-gradient(135deg,rgba(0,85,255,0.2),rgba(0,212,255,0.1));border-color:rgba(0,212,255,0.4);color:var(--cyan);}
+
+/* SUMMARY */
+.summary-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.sum-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 8px;text-align:center;}
+.sum-val{font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace}
+.sum-lbl{font-size:9px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.sum-cyan .sum-val{color:var(--cyan)} .sum-green .sum-val{color:var(--green)} .sum-orange .sum-val{color:var(--orange)}
+
+/* FILTER */
+.filter-row{display:flex;gap:8px;margin-bottom:14px;align-items:center}
+.filter-input{flex:1;padding:10px 14px;background:rgba(10,20,40,0.8);border:1px solid var(--border);border-radius:12px;font-family:'Exo 2',sans-serif;font-size:13px;color:var(--text1);outline:none;transition:border-color 0.3s;}
+.filter-input:focus{border-color:var(--border2)}
+.filter-input::placeholder{color:var(--text3)}
+.refresh-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--border);background:rgba(0,212,255,0.08);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;transition:all 0.2s;}
+.refresh-btn:hover{background:rgba(0,212,255,0.15)}
+.refresh-btn.spinning{animation:spin 0.8s linear infinite}
+@keyframes spin{100%{transform:rotate(360deg)}}
+
+/* TABLE */
+.table-card{background:var(--card);backdrop-filter:blur(15px);border:1px solid var(--border);border-radius:18px;overflow:hidden;}
+
+.table-scroll{overflow-x:auto;scrollbar-width:thin;scrollbar-color:rgba(0,212,255,0.2) transparent;}
+.table-scroll::-webkit-scrollbar{height:3px}
+.table-scroll::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.2);border-radius:2px}
+
+table{width:100%;border-collapse:collapse;min-width:400px;}
+thead tr{background:rgba(0,212,255,0.06);border-bottom:1px solid var(--border);}
+thead th{padding:10px 12px;font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;text-align:left;white-space:nowrap;}
+
+.table-body-wrap{max-height:58vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(0,212,255,0.15) transparent;}
+.table-body-wrap::-webkit-scrollbar{width:3px}
+.table-body-wrap::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.15);border-radius:2px}
+
+tbody tr{border-bottom:1px solid rgba(0,212,255,0.04);cursor:pointer;transition:background 0.15s;}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(0,212,255,0.04)}
+tbody tr.today-row{background:rgba(0,255,148,0.04);}
+tbody tr.today-row:hover{background:rgba(0,255,148,0.07);}
+tbody td{padding:10px 12px;font-size:12px;color:var(--text2);white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;}
+tbody td.bold{color:var(--text1);font-weight:600;}
+tbody td.mono{font-family:'JetBrains Mono',monospace;font-size:11px;}
+
+.today-chip{display:inline-block;font-size:8px;font-weight:700;font-family:'JetBrains Mono',monospace;padding:2px 5px;border-radius:5px;background:rgba(0,255,148,0.15);border:1px solid rgba(0,255,148,0.3);color:var(--green);margin-left:5px;vertical-align:middle;}
+
+/* TODAY SECTION */
+.today-section{margin-bottom:16px;}
+.today-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.today-hd-title{font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text2);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.today-hd-title::before{content:'';width:3px;height:14px;border-radius:2px;background:linear-gradient(var(--green),var(--cyan));flex-shrink:0;}
+.today-date-chip{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--green);background:rgba(0,255,148,0.08);border:1px solid rgba(0,255,148,0.2);padding:3px 10px;border-radius:10px;}
+
+.today-loading{display:flex;align-items:center;gap:10px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:14px;}
+.today-loading-spinner{width:16px;height:16px;border:2px solid rgba(0,212,255,0.1);border-top-color:var(--cyan);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
+.today-loading-text{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:1px;}
+
+.today-empty{padding:16px;text-align:center;background:var(--card);border:1px dashed var(--border);border-radius:14px;font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:1px;}
+
+.today-cards{display:flex;flex-direction:column;gap:8px;}
+.today-card{
+  background:var(--card);border:1px solid rgba(0,255,148,0.15);border-radius:14px;
+  overflow:hidden;display:flex;cursor:pointer;
+  transition:all 0.25s;animation:fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+}
+.today-card:hover{transform:translateX(3px);border-color:rgba(0,255,148,0.3);box-shadow:0 4px 20px rgba(0,255,148,0.08);}
+.today-card-bar{width:3px;flex-shrink:0;}
+.today-card-body{flex:1;padding:12px 13px;}
+.today-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.today-card-project{font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:1px;padding:2px 8px;border-radius:8px;}
+.today-card-no{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.today-card-lokasi{font-size:13px;font-weight:700;color:var(--text1);margin-bottom:4px;line-height:1.3;}
+.today-card-meta{display:flex;flex-wrap:wrap;gap:8px;}
+.today-card-meta-item{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:3px;}
+.today-card-meta-item span{color:var(--text2);}
+
+@keyframes fadeUp{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:translateY(0)}}
+.loading-state,.empty-state,.error-state{padding:40px;text-align:center;}
+.loading-spinner{width:32px;height:32px;border:3px solid rgba(0,212,255,0.1);border-top-color:var(--cyan);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 14px;}
+.state-text{font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:1px;line-height:1.8;}
+.loading-state .state-text{color:var(--text3)}
+.empty-state .state-text{color:var(--text3)}
+.error-state .state-text{color:var(--red)}
+.state-icon{font-size:36px;margin-bottom:10px;}
+
+/* TOAST */
+.toast-wrap{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:999;width:calc(100% - 32px);max-width:420px;pointer-events:none}
+.toast{padding:12px 16px;border-radius:12px;display:flex;align-items:center;gap:10px;backdrop-filter:blur(20px);box-shadow:0 8px 30px rgba(0,0,0,0.5);animation:fadeIn 0.4s cubic-bezier(0.16,1,0.3,1) both;pointer-events:all;margin-bottom:8px;}
+@keyframes fadeIn{0%{opacity:0;transform:translateY(-12px)}100%{opacity:1;transform:translateY(0)}}
+.toast.hide{opacity:0;transform:translateY(-12px);transition:all 0.3s}
+.toast-success{background:rgba(0,20,10,0.95);border:1px solid rgba(0,255,148,0.3)}
+.toast-error{background:rgba(20,5,10,0.95);border:1px solid rgba(255,59,92,0.3)}
+.toast-info{background:rgba(5,12,25,0.95);border:1px solid rgba(0,212,255,0.3)}
+.toast-icon{font-size:18px;flex-shrink:0}
+.toast-title{font-size:13px;font-weight:700}
+.toast-msg{font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-top:2px}
+.toast-success .toast-title{color:var(--green)}
+.toast-error .toast-title{color:var(--red)}
+.toast-info .toast-title{color:var(--cyan)}
+</style>
+</head>
+<body>
+<div class="bg-base"></div>
+<div class="grid-bg"></div>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<nav class="topnav">
+  <div class="back-btn" onclick="window.location.href='dashboard.html'">‹</div>
+  <div class="nav-info">
+    <div class="nav-title">JADWAL</div>
+    <div class="nav-sub" id="navSub">GOOGLE SHEETS</div>
+  </div>
+  <div class="nav-time" id="navClock">--:--</div>
+</nav>
+
+<div class="main">
+
+  <!-- TODAY ALL PROJECTS -->
+  <div class="today-section">
+    <div class="today-hd">
+      <div class="today-hd-title">Jadwal Hari Ini</div>
+      <div class="today-date-chip" id="todayDateChip">—</div>
+    </div>
+    <div id="todaySection">
+      <div class="today-loading">
+        <div class="today-loading-spinner"></div>
+        <div class="today-loading-text">MEMUAT SEMUA PROJECT...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIVIDER -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+    <div style="flex:1;height:1px;background:var(--border)"></div>
+    <div style="font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:2px;">SEMUA DATA</div>
+    <div style="flex:1;height:1px;background:var(--border)"></div>
+  </div>
+
+  <div class="sheet-tabs" id="sheetTabs"></div>
+  <div class="summary-row">
+    <div class="sum-card sum-cyan"><div class="sum-val" id="sumTotal">—</div><div class="sum-lbl">Total</div></div>
+    <div class="sum-card sum-green"><div class="sum-val" id="sumToday">—</div><div class="sum-lbl">Hari Ini</div></div>
+    <div class="sum-card sum-orange"><div class="sum-val" id="sumPersonel">—</div><div class="sum-lbl">Personel</div></div>
+  </div>
+  <div class="filter-row">
+    <input class="filter-input" id="searchInput" type="text" placeholder="🔍  Cari lokasi, personel, tanggal..." oninput="filterTable()">
+    <div class="refresh-btn" id="refreshBtn" onclick="reloadCurrent()">🔄</div>
+  </div>
+  <div class="table-card" id="tableCard">
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <div class="state-text">MENGHUBUNGKAN KE GOOGLE SHEETS...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_KEY   = 'AIzaSyC3hpXhh0q9yhUjyktMuOP5iVdMD291-C4';
+const SHEET_ID  = '1uADQwMEQ9fToy0IZlNyp9hdx9hkFpZyrGz-tx88C6kE';
+
+const SHEETS = [
+  {name:'OFFICE',           label:'OFFICE'},
+  {name:'KCI JABODETABEK',  label:'KCI JABO'},
+  {name:'LRT JABODEBEK',    label:'LRT JABO'},
+  {name:'KCIC',             label:'KCIC'},
+  {name:'KA BANDARA JAKARTA',label:'BANDARA'},
+  {name:'MY GRAPARI',       label:'MY GRAPARI'},
+];
+
+let currentSheet = SHEETS[0].name;
+let allHeaders   = [];
+let allRows      = [];
+
+// Clock
+function tick(){
+  const n=new Date();
+  document.getElementById('navClock').textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+}
+tick(); setInterval(tick,10000);
+
+// Toast
+function toast(type,title,msg,dur=3500){
+  const w=document.getElementById('toastWrap');
+  const icons={success:'✅',error:'❌',info:'ℹ️'};
+  const d=document.createElement('div');
+  d.className=`toast toast-${type}`;
+  d.innerHTML=`<span class="toast-icon">${icons[type]}</span><div><div class="toast-title">${title}</div><div class="toast-msg">${msg||''}</div></div>`;
+  w.innerHTML=''; w.appendChild(d);
+  setTimeout(()=>{d.classList.add('hide');setTimeout(()=>d.remove(),350)},dur);
+}
+
+// Build tabs
+function buildTabs(){
+  const w=document.getElementById('sheetTabs');
+  w.innerHTML='';
+  SHEETS.forEach(s=>{
+    const b=document.createElement('div');
+    b.className='sheet-tab'+(s.name===currentSheet?' active':'');
+    b.textContent=s.label;
+    b.onclick=()=>{
+      currentSheet=s.name;
+      document.querySelectorAll('.sheet-tab').forEach(t=>t.classList.remove('active'));
+      b.classList.add('active');
+      document.getElementById('searchInput').value='';
+      loadSheet(currentSheet);
+    };
+    w.appendChild(b);
+  });
+}
+
+// Detect today in a row
+function isToday(row){
+  const n=new Date();
+  const dayID=n.toLocaleDateString('id-ID',{weekday:'long'});   // "Selasa"
+  const dateNum=n.getDate();                                      // 10
+  const monthID=n.toLocaleDateString('id-ID',{month:'long'});   // "Maret"
+  const yearNum=n.getFullYear();                                  // 2026
+  const combined=row.join(' ');
+  return combined.includes(dayID)
+      && combined.includes(String(dateNum))
+      && combined.toLowerCase().includes(monthID.toLowerCase())
+      && combined.includes(String(yearNum));
+}
+
+// Summary
+function updateSummary(headers,rows){
+  document.getElementById('sumTotal').textContent=rows.length;
+  const todayRows=rows.filter(isToday);
+  document.getElementById('sumToday').textContent=todayRows.length||'—';
+
+  const pi=headers.findIndex(h=>h.toLowerCase().includes('personel'));
+  const pset=new Set();
+  rows.forEach(r=>{
+    if(pi>=0&&r[pi]) r[pi].split(/[\n,&\/]/).forEach(p=>{const t=p.trim();if(t)pset.add(t);});
+  });
+  document.getElementById('sumPersonel').textContent=pset.size||'—';
+}
+
+// Render table
+function renderTable(headers,rows){
+  const card=document.getElementById('tableCard');
+  if(!rows.length){
+    card.innerHTML=`<div class="empty-state"><div class="state-icon">📭</div><div class="state-text">TIDAK ADA DATA DITEMUKAN</div></div>`;
+    return;
+  }
+
+  // Determine bold & mono columns
+  function isBoldCol(h){return /nama|stasiun|lokasi|lintas|judul/i.test(h);}
+  function isMonoCol(h){return /^no$|cvim|id perangkat/i.test(h.trim());}
+
+  let thead=`<thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead>`;
+  let tbodyRows='';
+
+  rows.forEach((row,i)=>{
+    const today=isToday(row);
+    tbodyRows+=`<tr class="${today?'today-row':''}" onclick="rowDetail(${i})">`;
+    headers.forEach((h,ci)=>{
+      let val=row[ci]??'—';
+      const bold=isBoldCol(h)?'bold':'';
+      const mono=isMonoCol(h)?'mono':'';
+      // Add today chip on tanggal/hari column
+      let chip='';
+      if(today&&/tanggal|hari/i.test(h)) chip=`<span class="today-chip">HARI INI</span>`;
+      tbodyRows+=`<td class="${bold} ${mono}">${val}${chip}</td>`;
+    });
+    tbodyRows+=`</tr>`;
+  });
+
+  card.innerHTML=`
+    <div class="table-scroll">
+      <div class="table-body-wrap">
+        <table>${thead}<tbody>${tbodyRows}</tbody></table>
+      </div>
+    </div>`;
+}
+
+// Row detail toast
+function rowDetail(i){
+  const row=allRows[i];
+  if(!row) return;
+  const lokasiIdx=allHeaders.findIndex(h=>/lokasi|stasiun/i.test(h));
+  const tglIdx=allHeaders.findIndex(h=>/tanggal|hari/i.test(h));
+  const perIdx=allHeaders.findIndex(h=>/personel/i.test(h));
+  const lokasi=lokasiIdx>=0?row[lokasiIdx]:'—';
+  const tgl=tglIdx>=0?row[tglIdx]:'—';
+  const per=perIdx>=0?row[perIdx]:'—';
+  toast('info',lokasi,`📅 ${tgl}  ·  👤 ${per}`,4000);
+}
+
+// Filter
+function filterTable(){
+  const q=document.getElementById('searchInput').value.toLowerCase().trim();
+  const filtered=q?allRows.filter(r=>r.some(c=>c.toLowerCase().includes(q))):allRows;
+  document.getElementById('sumTotal').textContent=filtered.length;
+  renderTable(allHeaders,filtered);
+}
+
+// Load from Sheets API
+async function loadSheet(sheetName){
+  document.getElementById('refreshBtn').classList.add('spinning');
+  document.getElementById('navSub').textContent=sheetName;
+  document.getElementById('tableCard').innerHTML=`
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <div class="state-text">MEMUAT ${sheetName}...</div>
+    </div>`;
+
+  const range=encodeURIComponent(`${sheetName}!A1:Z1000`);
+  const url=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${API_KEY}`;
+
+  try{
+    const res=await fetch(url);
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      throw new Error(err?.error?.message||`HTTP ${res.status}`);
+    }
+    const data=await res.json();
+    const values=data.values||[];
+
+    if(values.length<2){
+      allHeaders=[]; allRows=[];
+      document.getElementById('tableCard').innerHTML=`<div class="empty-state"><div class="state-icon">📭</div><div class="state-text">SHEET KOSONG</div></div>`;
+      updateSummary([],[]);
+      document.getElementById('refreshBtn').classList.remove('spinning');
+      return;
+    }
+
+    allHeaders=values[0];
+    allRows=values.slice(1);
+    updateSummary(allHeaders,allRows);
+    renderTable(allHeaders,allRows);
+    toast('success','Data Berhasil Dimuat',`${sheetName}  ·  ${allRows.length} baris`);
+
+  }catch(e){
+    document.getElementById('tableCard').innerHTML=`
+      <div class="error-state">
+        <div class="state-icon">⚠️</div>
+        <div class="state-text">GAGAL MEMUAT DATA<br><br>${e.message}<br><br>Pastikan Google Sheets sudah<br>di-set PUBLIC (Anyone with the link)</div>
+      </div>`;
+    toast('error','Gagal Terhubung',e.message,6000);
+  }
+
+  document.getElementById('refreshBtn').classList.remove('spinning');
+}
+
+function reloadCurrent(){
+  document.getElementById('searchInput').value='';
+  loadSheet(currentSheet);
+}
+
+// ── PROJECT colors ──
+const PROJ_COLORS = {
+  'OFFICE':             {color:'#7A9CC0', bg:'rgba(122,156,192,0.15)'},
+  'KCI JABODETABEK':    {color:'#00D4FF', bg:'rgba(0,212,255,0.12)'},
+  'LRT JABODEBEK':      {color:'#FF8C00', bg:'rgba(255,140,0,0.12)'},
+  'KCIC':               {color:'#A855F7', bg:'rgba(168,85,247,0.12)'},
+  'KA BANDARA JAKARTA': {color:'#00FF94', bg:'rgba(0,255,148,0.12)'},
+  'MY GRAPARI':         {color:'#FF3B5C', bg:'rgba(255,59,92,0.12)'},
+};
+
+// ── Fetch one sheet silently ──
+async function fetchSheet(sheetName){
+  const range = encodeURIComponent(`${sheetName}!A1:Z1000`);
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${API_KEY}`;
+  try{
+    const res = await fetch(url);
+    if(!res.ok) return {headers:[], rows:[]};
+    const data = await res.json();
+    const values = data.values || [];
+    if(values.length < 2) return {headers:[], rows:[]};
+    return {headers: values[0], rows: values.slice(1)};
+  } catch(e){ return {headers:[], rows:[]}; }
+}
+
+// ── Load ALL sheets and show today's items ──
+async function loadAllToday(){
+  // Set today date chip
+  const n = new Date();
+  const dayID   = n.toLocaleDateString('id-ID',{weekday:'long'});
+  const dateNum = n.getDate();
+  const monthID = n.toLocaleDateString('id-ID',{month:'long'});
+  const yearNum = n.getFullYear();
+  document.getElementById('todayDateChip').textContent =
+    `${dayID}, ${String(dateNum).padStart(2,'0')} ${monthID} ${yearNum}`;
+
+  // Fetch all sheets in parallel
+  const results = await Promise.all(SHEETS.map(s => fetchSheet(s.name).then(d => ({...d, sheetName: s.name}))));
+
+  // Collect today rows from all sheets
+  const todayItems = [];
+  results.forEach(({sheetName, headers, rows}) => {
+    const lokasiIdx = headers.findIndex(h=>/lokasi|nama.stasiun|stasiun/i.test(h));
+    const perIdx    = headers.findIndex(h=>/personel/i.test(h));
+    const noIdx     = headers.findIndex(h=>/^no$/i.test(h.trim()));
+    const lintasIdx = headers.findIndex(h=>/lintas/i.test(h));
+    const jmlIdx    = headers.findIndex(h=>/jumlah/i.test(h));
+    const jenisIdx  = headers.findIndex(h=>/jenis/i.test(h));
+
+    rows.forEach(row => {
+      if(!isToday(row)) return;
+      todayItems.push({
+        sheetName,
+        lokasi:  lokasiIdx>=0 ? row[lokasiIdx] : '—',
+        personel:perIdx>=0    ? row[perIdx]    : '—',
+        no:      noIdx>=0     ? row[noIdx]     : '',
+        lintas:  lintasIdx>=0 ? row[lintasIdx] : '',
+        jumlah:  jmlIdx>=0    ? row[jmlIdx]    : '',
+        jenis:   jenisIdx>=0  ? row[jenisIdx]  : '',
+      });
+    });
+  });
+
+  const sec = document.getElementById('todaySection');
+
+  if(todayItems.length === 0){
+    sec.innerHTML = `<div class="today-empty">📭 &nbsp; TIDAK ADA JADWAL HARI INI DI SEMUA PROJECT</div>`;
+    return;
+  }
+
+  let html = `<div class="today-cards">`;
+  todayItems.forEach((item, i) => {
+    const pc = PROJ_COLORS[item.sheetName] || {color:'#7A9CC0', bg:'rgba(122,156,192,0.12)'};
+    const extraMeta = [
+      item.lintas ? `🚉 <span>${item.lintas}</span>` : '',
+      item.jumlah ? `📦 <span>${item.jumlah}</span>` : '',
+      item.jenis  ? `🔧 <span>${item.jenis}</span>`  : '',
+      item.personel && item.personel!=='—' ? `👤 <span>${item.personel.replace(/\n/g,' · ')}</span>` : '',
+    ].filter(Boolean).join('');
+
+    html += `
+    <div class="today-card" style="animation-delay:${i*0.05}s" onclick="void(0)">
+      <div class="today-card-bar" style="background:${pc.color}"></div>
+      <div class="today-card-body">
+        <div class="today-card-top">
+          <div class="today-card-project" style="background:${pc.bg};color:${pc.color};border:1px solid ${pc.color}30">${item.sheetName}</div>
+          ${item.no ? `<div class="today-card-no">#${item.no}</div>` : ''}
+        </div>
+        <div class="today-card-lokasi">${item.lokasi}</div>
+        ${extraMeta ? `<div class="today-card-meta">${extraMeta.split('').join('').split(',').join('')}</div>` : ''}
+      </div>
+    </div>`;
+  });
+  html += `</div>`;
+  sec.innerHTML = html;
+}
+
+// Init
+buildTabs();
+loadAllToday();
+loadSheet(currentSheet);
+</script>
+</body>
+</html>

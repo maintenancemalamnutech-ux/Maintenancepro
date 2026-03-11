@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MaintenancePro — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060910;--s1:#0D1421;--s2:#111827;--s3:#1A2436;
+  --cyan:#22D3EE;--blue:#3B82F6;--indigo:#6366F1;
+  --green:#10B981;--red:#EF4444;--amber:#F59E0B;--purple:#A855F7;
+  --text1:#F1F5F9;--text2:#94A3B8;--text3:#475569;
+  --border:rgba(148,163,184,0.08);--border2:rgba(34,211,238,0.15);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text1);min-height:100vh;overflow-x:hidden;}
+.bg-fixed{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 80% 50% at 20% 0%,rgba(59,130,246,0.1) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 90% 100%,rgba(99,102,241,0.07) 0%,transparent 60%),#060910;}
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(148,163,184,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,0.025) 1px,transparent 1px);background-size:32px 32px;}
+
+/* TOPNAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;height:64px;display:flex;align-items:center;padding:0 20px;gap:14px;background:rgba(6,9,16,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);box-shadow:0 1px 0 rgba(255,255,255,0.02);}
+.nav-logo{display:flex;align-items:center;gap:10px;flex:1;}
+.nav-logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(34,211,238,0.15));border:1px solid rgba(34,211,238,0.15);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.nav-logo-text{font-size:14px;font-weight:800;letter-spacing:2px;background:linear-gradient(90deg,var(--text1),var(--text2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-logo-sub{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--text3);letter-spacing:1px;margin-top:1px;}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.nav-pill{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:5px 10px;border-radius:8px;letter-spacing:1px;}
+.nav-icon-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all 0.2s;}
+.nav-icon-btn:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.12);}
+
+/* MAIN */
+.main{position:relative;z-index:10;padding:80px 20px 100px;max-width:480px;margin:0 auto;}
+
+/* WELCOME */
+.welcome{background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(34,211,238,0.08));border:1px solid rgba(59,130,246,0.2);border-radius:20px;padding:20px;margin-bottom:20px;position:relative;overflow:hidden;}
+.welcome::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(59,130,246,0.15),transparent 70%);border-radius:50%;}
+.welcome-greeting{font-size:12px;font-weight:500;color:var(--cyan);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.welcome-name{font-size:22px;font-weight:700;color:var(--text1);margin-bottom:4px;}
+.welcome-role{font-size:12px;color:var(--text2);}
+.welcome-date{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text3);margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.stat{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;transition:all 0.25s;}
+.stat:hover{border-color:var(--border2);transform:translateY(-1px)}
+.stat-ico{font-size:22px;margin-bottom:8px;}
+.stat-val{font-size:22px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1;}
+.stat-lbl{font-size:10px;color:var(--text3);margin-top:4px;letter-spacing:0.5px;}
+.stat.c .stat-val{color:var(--cyan)} .stat.g .stat-val{color:var(--green)} .stat.a .stat-val{color:var(--amber)}
+
+/* SECTION */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.sec-title{font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:8px;letter-spacing:0.5px;}
+.sec-title::before{content:'';width:3px;height:14px;border-radius:2px;background:linear-gradient(var(--blue),var(--cyan));}
+.sec-action{font-size:11px;color:var(--cyan);cursor:pointer;font-weight:500;letter-spacing:0.5px;}
+.sec-action:hover{opacity:0.7}
+
+/* ABSENSI */
+.absensi-card{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:20px;}
+.abs-status{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.abs-avatar{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(59,130,246,0.2),rgba(34,211,238,0.1));border:1px solid rgba(34,211,238,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.abs-info{flex:1}
+.abs-name{font-size:14px;font-weight:600;color:var(--text1);}
+.abs-state{font-size:11px;font-family:'JetBrains Mono',monospace;margin-top:3px;}
+.abs-state.in{color:var(--green)} .abs-state.out{color:var(--red)} .abs-state.none{color:var(--text3)}
+.abs-time{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+.abs-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.abs-btn{padding:11px;border-radius:12px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.25s;border:none;letter-spacing:0.3px;}
+.abs-btn.in{background:linear-gradient(135deg,#10B981,#34D399);color:#fff;box-shadow:0 4px 16px rgba(16,185,129,0.25);}
+.abs-btn.in:hover{box-shadow:0 6px 24px rgba(16,185,129,0.4)}
+.abs-btn.out{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:var(--red);}
+.abs-btn.out:hover{background:rgba(239,68,68,0.15)}
+.abs-btn:disabled{opacity:0.4;cursor:not-allowed}
+
+/* QUICK ACTIONS */
+.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;}
+.qa{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;gap:12px;}
+.qa:hover{border-color:var(--border2);background:var(--s2);transform:translateY(-1px)}
+.qa-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.qa-text{flex:1}
+.qa-label{font-size:13px;font-weight:600;color:var(--text1);}
+.qa-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.qa-arrow{color:var(--text3);font-size:16px;}
+
+/* PROJECTS */
+.projects{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.proj{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:16px;transition:all 0.25s;cursor:pointer;}
+.proj:hover{border-color:var(--border2);background:var(--s2);}
+.proj-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.proj-left{display:flex;align-items:center;gap:10px;}
+.proj-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.proj-name{font-size:13px;font-weight:600;color:var(--text1);}
+.proj-id{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);margin-top:2px;}
+.proj-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:8px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;}
+.proj-bar-wrap{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.proj-bar{height:100%;border-radius:2px;transition:width 0.8s cubic-bezier(0.16,1,0.3,1);}
+.proj-footer{display:flex;justify-content:space-between;margin-top:8px;}
+.proj-stat{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(6,9,16,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:8px 20px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:space-around;max-width:480px;margin:0 auto;}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px 16px;border-radius:12px;transition:all 0.2s;flex:1;}
+.bnav-item:hover{background:rgba(255,255,255,0.04)}
+.bnav-item.active{background:rgba(34,211,238,0.08);}
+.bnav-ico{font-size:20px;}
+.bnav-lbl{font-size:9px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--text3);}
+.bnav-item.active .bnav-lbl{color:var(--cyan);}
+
+/* TOAST */
+.toasts{position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:999;width:calc(100% - 32px);max-width:420px;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.toast{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:tin 0.4s cubic-bezier(0.16,1,0.3,1) both;pointer-events:all;}
+@keyframes tin{from{opacity:0;transform:translateY(-12px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.toast.out{opacity:0;transition:opacity 0.3s}
+.toast.success{background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.25);}
+.toast.error{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);}
+.toast.info{background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.25);}
+.t-ico{font-size:18px;flex-shrink:0}
+.t-title{font-size:13px;font-weight:600;color:var(--text1);}
+.t-msg{font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+</style>
+</head>
+<body>
+<div class="bg-fixed"></div>
+<div class="bg-grid"></div>
+<div class="toasts" id="toasts"></div>
+
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">⚙️</div>
+    <div>
+      <div class="nav-logo-text">MAINTENANCEPRO</div>
+      <div class="nav-logo-sub">FIELD MANAGEMENT</div>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-pill" id="navClock">--:--</div>
+    <div class="nav-icon-btn" id="usersBtn" style="display:none" onclick="location.href='users.html'" title="Manage Users">👥</div>
+    <div class="nav-icon-btn" onclick="doLogout()" title="Logout">🚪</div>
+  </div>
+</nav>
+
+<div class="main">
+
+  <!-- Welcome -->
+  <div class="welcome">
+    <div class="welcome-greeting">👋 Selamat Datang</div>
+    <div class="welcome-name" id="wName">—</div>
+    <div class="welcome-role" id="wRole">—</div>
+    <div class="welcome-date" id="wDate">—</div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat c"><div class="stat-ico">📋</div><div class="stat-val">7</div><div class="stat-lbl">Proyek</div></div>
+    <div class="stat g"><div class="stat-ico">✅</div><div class="stat-val" id="statToday">0</div><div class="stat-lbl">Jadwal Hari Ini</div></div>
+    <div class="stat a"><div class="stat-ico">👷</div><div class="stat-val">12</div><div class="stat-lbl">Personel</div></div>
+  </div>
+
+  <!-- Absensi -->
+  <div class="sec-hd"><div class="sec-title">Absensi</div></div>
+  <div class="absensi-card">
+    <div class="abs-status">
+      <div class="abs-avatar" id="absAvatar">👤</div>
+      <div class="abs-info">
+        <div class="abs-name" id="absName">—</div>
+        <div class="abs-state none" id="absState">Belum absen hari ini</div>
+        <div class="abs-time" id="absTime"></div>
+      </div>
+    </div>
+    <div class="abs-btns">
+      <button class="abs-btn in" id="btnIn" onclick="doAbsensi('in')">✅ &nbsp;Masuk</button>
+      <button class="abs-btn out" id="btnOut" onclick="doAbsensi('out')">🏁 &nbsp;Pulang</button>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="sec-hd"><div class="sec-title">Menu Utama</div></div>
+  <div class="quick">
+    <div class="qa" onclick="location.href='jadwal.html'">
+      <div class="qa-icon" style="background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.15)">📅</div>
+      <div class="qa-text"><div class="qa-label">Jadwal</div><div class="qa-sub">Lihat semua jadwal</div></div>
+      <div class="qa-arrow">›</div>
+    </div>
+    <div class="qa" onclick="location.href='users.html'" id="qaUsers" style="display:none">
+      <div class="qa-icon" style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.15)">👥</div>
+      <div class="qa-text"><div class="qa-label">Users</div><div class="qa-sub">Kelola akun</div></div>
+      <div class="qa-arrow">›</div>
+    </div>
+    <div class="qa" onclick="toast('info','Segera Hadir','Fitur laporan sedang dikembangkan.')">
+      <div class="qa-icon" style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.15)">📊</div>
+      <div class="qa-text"><div class="qa-label">Laporan</div><div class="qa-sub">Rekap & analitik</div></div>
+      <div class="qa-arrow">›</div>
+    </div>
+    <div class="qa" onclick="toast('info','Segera Hadir','Fitur notifikasi sedang dikembangkan.')">
+      <div class="qa-icon" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.15)">🔔</div>
+      <div class="qa-text"><div class="qa-label">Notifikasi</div><div class="qa-sub">Peringatan aktif</div></div>
+      <div class="qa-arrow">›</div>
+    </div>
+  </div>
+
+  <!-- Projects -->
+  <div class="sec-hd">
+    <div class="sec-title">Proyek Aktif</div>
+    <div class="sec-action" onclick="location.href='jadwal.html'">Lihat Jadwal →</div>
+  </div>
+  <div class="projects" id="projectList"></div>
+
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bnav">
+  <div class="bnav-item active" onclick="scrollTo(0,0)">
+    <div class="bnav-ico">🏠</div><div class="bnav-lbl">Home</div>
+  </div>
+  <div class="bnav-item" onclick="location.href='jadwal.html'">
+    <div class="bnav-ico">📅</div><div class="bnav-lbl">Jadwal</div>
+  </div>
+  <div class="bnav-item" onclick="toast('info','Segera Hadir','Fitur ini sedang dikembangkan.')">
+    <div class="bnav-ico">📊</div><div class="bnav-lbl">Laporan</div>
+  </div>
+  <div class="bnav-item" onclick="doLogout()">
+    <div class="bnav-ico">🚪</div><div class="bnav-lbl">Keluar</div>
+  </div>
+</nav>
+
+<script>
+// Auth
+const cu=JSON.parse(sessionStorage.getItem('mp_currentUser')||'null');
+if(!cu) location.href='maintenance-login.html';
+const isAdmin=cu?.role?.toLowerCase().includes('admin');
+
+// Admin features
+if(isAdmin){
+  document.getElementById('usersBtn').style.display='flex';
+  document.getElementById('qaUsers').style.display='flex';
+}
+
+// Clock
+function tick(){
+  const n=new Date();
+  document.getElementById('navClock').textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+}
+tick();setInterval(tick,10000);
+
+// Toast
+function toast(type,title,msg,dur=3500){
+  const w=document.getElementById('toasts');
+  const icons={success:'✅',error:'❌',info:'ℹ️'};
+  const d=document.createElement('div');
+  d.className=`toast ${type}`;
+  d.innerHTML=`<span class="t-ico">${icons[type]||'ℹ️'}</span><div><div class="t-title">${title}</div>${msg?`<div class="t-msg">${msg}</div>`:''}</div>`;
+  w.appendChild(d);
+  setTimeout(()=>{d.classList.add('out');setTimeout(()=>d.remove(),300);},dur);
+}
+
+// Welcome
+const now=new Date();
+document.getElementById('wName').textContent=cu.username;
+document.getElementById('wRole').textContent=cu.role;
+document.getElementById('wDate').textContent=now.toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+document.getElementById('absName').textContent=cu.username;
+document.getElementById('absAvatar').textContent=cu.username[0]?.toUpperCase()||'👤';
+
+// Absensi
+const absKey=`mp_abs_${cu.username}_${now.toDateString()}`;
+const absData=JSON.parse(localStorage.getItem(absKey)||'{}');
+function renderAbs(){
+  const si=document.getElementById('absState'),ti=document.getElementById('absTime');
+  const bi=document.getElementById('btnIn'),bo=document.getElementById('btnOut');
+  if(absData.out){
+    si.className='abs-state out';si.textContent='Sudah pulang';
+    ti.textContent=`Masuk ${absData.inTime} · Pulang ${absData.outTime}`;
+    bi.disabled=true;bo.disabled=true;
+  }else if(absData.in){
+    si.className='abs-state in';si.textContent='Sedang bekerja';
+    ti.textContent=`Masuk pukul ${absData.inTime}`;
+    bi.disabled=true;bo.disabled=false;
+  }else{
+    si.className='abs-state none';si.textContent='Belum absen hari ini';
+    ti.textContent='';bi.disabled=false;bo.disabled=true;
+  }
+}
+renderAbs();
+function doAbsensi(type){
+  const t=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  if(type==='in'){absData.in=true;absData.inTime=t;}
+  else{absData.out=true;absData.outTime=t;}
+  localStorage.setItem(absKey,JSON.stringify(absData));
+  renderAbs();
+  toast('success',type==='in'?'Absen Masuk':'Absen Pulang',`Tercatat pukul ${t}`);
+}
+
+// Projects
+const PROJECTS=[
+  {name:'KCI Jabodetabek',id:'PRJ-KCI-001',pct:72,color:'#22D3EE',status:'AKTIF'},
+  {name:'KCI Bandara Jakarta',id:'PRJ-KCI-002',pct:45,color:'#3B82F6',status:'PROGRESS'},
+  {name:'KCI Merak-Rangkas',id:'PRJ-KCI-003',pct:88,color:'#10B981',status:'AKTIF'},
+  {name:'KCI Jogja',id:'PRJ-KCI-004',pct:30,color:'#F59E0B',status:'HOLD'},
+  {name:'LRT Jabodebek',id:'PRJ-LRT-001',pct:60,color:'#A855F7',status:'PROGRESS'},
+  {name:'My Grapari Jakarta',id:'PRJ-GRP-001',pct:15,color:'#6366F1',status:'PROGRESS'},
+  {name:'KCIC Jakarta-Bandung',id:'PRJ-KCIC-001',pct:95,color:'#10B981',status:'SELESAI'},
+];
+const statusColor={AKTIF:'rgba(34,211,238,0.12)',PROGRESS:'rgba(59,130,246,0.12)',HOLD:'rgba(245,158,11,0.12)',SELESAI:'rgba(16,185,129,0.12)'};
+const statusText={AKTIF:'#22D3EE',PROGRESS:'#3B82F6',HOLD:'#F59E0B',SELESAI:'#10B981'};
+
+const pl=document.getElementById('projectList');
+PROJECTS.forEach((p,i)=>{
+  const el=document.createElement('div');
+  el.className='proj';
+  el.style.animationDelay=i*0.05+'s';
+  el.innerHTML=`
+    <div class="proj-top">
+      <div class="proj-left">
+        <div class="proj-dot" style="background:${p.color};box-shadow:0 0 6px ${p.color}60"></div>
+        <div><div class="proj-name">${p.name}</div><div class="proj-id">${p.id}</div></div>
+      </div>
+      <div class="proj-badge" style="background:${statusColor[p.status]};color:${statusText[p.status]};border:1px solid ${statusText[p.status]}30">${p.status}</div>
+    </div>
+    <div class="proj-bar-wrap"><div class="proj-bar" style="width:0%;background:linear-gradient(90deg,${p.color}80,${p.color})" data-w="${p.pct}"></div></div>
+    <div class="proj-footer">
+      <div class="proj-stat">Progress</div>
+      <div class="proj-stat" style="color:${p.color}">${p.pct}%</div>
+    </div>`;
+  pl.appendChild(el);
+  setTimeout(()=>{el.querySelector('.proj-bar').style.width=p.pct+'%';},100+i*80);
+});
+
+// Logout
+function doLogout(){
+  sessionStorage.removeItem('mp_currentUser');
+  location.href='maintenance-login.html';
+}
+</script>
+</body>
+</html>

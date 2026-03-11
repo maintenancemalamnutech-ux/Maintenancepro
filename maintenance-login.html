@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MaintenancePro — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060910;--surface:#0D1421;--surface2:#111827;
+  --cyan:#22D3EE;--blue:#3B82F6;--indigo:#6366F1;
+  --green:#10B981;--red:#EF4444;--amber:#F59E0B;
+  --text1:#F1F5F9;--text2:#94A3B8;--text3:#475569;
+  --border:rgba(148,163,184,0.08);--border2:rgba(34,211,238,0.2);
+  --glow:rgba(34,211,238,0.15);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text1);display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;}
+
+/* BG */
+.bg{position:fixed;inset:0;z-index:0;}
+.bg-grad{position:absolute;inset:0;background:radial-gradient(ellipse 100% 80% at 50% -20%,rgba(59,130,246,0.15) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 100% 100%,rgba(99,102,241,0.1) 0%,transparent 60%),#060910;}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(148,163,184,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,0.03) 1px,transparent 1px);background-size:32px 32px;}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;}
+.orb1{width:400px;height:400px;background:rgba(59,130,246,0.12);top:-100px;left:-100px;animation:float1 12s ease-in-out infinite;}
+.orb2{width:300px;height:300px;background:rgba(99,102,241,0.1);bottom:-80px;right:-80px;animation:float2 10s ease-in-out infinite;}
+@keyframes float1{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,20px)}}
+@keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(-20px,-30px)}}
+
+/* WRAPPER */
+.wrapper{position:relative;z-index:10;width:100%;max-width:400px;padding:20px;}
+
+/* LOGO */
+.logo-wrap{text-align:center;margin-bottom:32px;}
+.logo-icon{width:64px;height:64px;margin:0 auto 16px;background:linear-gradient(135deg,rgba(59,130,246,0.2),rgba(34,211,238,0.1));border:1px solid rgba(34,211,238,0.2);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 0 40px rgba(34,211,238,0.1),inset 0 1px 0 rgba(255,255,255,0.05);}
+.logo-name{font-size:22px;font-weight:800;letter-spacing:3px;background:linear-gradient(135deg,#F1F5F9,#94A3B8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;}
+.logo-sub{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);letter-spacing:3px;}
+
+/* CARD */
+.card{background:rgba(13,20,33,0.8);backdrop-filter:blur(24px);border:1px solid var(--border);border-radius:24px;padding:32px 28px;box-shadow:0 24px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.04);}
+
+.card-title{font-size:20px;font-weight:700;color:var(--text1);margin-bottom:4px;}
+.card-sub{font-size:13px;color:var(--text3);margin-bottom:28px;font-weight:400;}
+
+/* FIELD */
+.field{margin-bottom:16px;}
+.field-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;display:block;}
+.field-inner{position:relative;}
+.field-ico{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;}
+.field-input{width:100%;padding:13px 14px 13px 44px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;font-family:'Inter',sans-serif;font-size:14px;color:var(--text1);outline:none;transition:all 0.25s;}
+.field-input:focus{border-color:var(--border2);background:rgba(34,211,238,0.04);box-shadow:0 0 0 3px rgba(34,211,238,0.06);}
+.field-input::placeholder{color:var(--text3)}
+.field-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:16px;color:var(--text3);background:none;border:none;transition:color 0.2s;}
+.field-eye:hover{color:var(--text2)}
+
+/* EXTRAS */
+.extras{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.remember{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.check-box{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--text3);display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
+.check-box.on{background:var(--cyan);border-color:var(--cyan);}
+.check-box.on::after{content:'✓';font-size:11px;color:#000;font-weight:700;}
+.remember-text{font-size:13px;color:var(--text2);}
+.forgot{font-size:13px;font-weight:500;color:var(--cyan);background:none;border:none;cursor:pointer;transition:opacity 0.2s;}
+.forgot:hover{opacity:0.7}
+
+/* LOGIN BTN */
+.login-btn{width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;position:relative;overflow:hidden;transition:all 0.3s;background:linear-gradient(135deg,#3B82F6,#22D3EE);color:#fff;box-shadow:0 4px 24px rgba(59,130,246,0.35);}
+.login-btn:hover{box-shadow:0 8px 32px rgba(59,130,246,0.5);transform:translateY(-1px)}
+.login-btn:active{transform:translateY(0)}
+.login-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.btn-content{display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:none;}
+.login-btn.loading .btn-text{opacity:0.5}
+.login-btn.loading .btn-spinner{display:block}
+@keyframes spin{100%{transform:rotate(360deg)}}
+
+/* STATUS BAR */
+.status-bar{display:flex;align-items:center;justify-content:center;gap:20px;margin-top:24px;padding-top:20px;border-top:1px solid var(--border);}
+.status-dot{display:flex;align-items:center;gap:6px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);letter-spacing:1px;}
+.dot{width:6px;height:6px;border-radius:50%;animation:pulse 2s infinite;}
+.dot.g{background:var(--green);box-shadow:0 0 6px var(--green);}
+.dot.b{background:var(--blue);box-shadow:0 0 6px var(--blue);}
+.dot.c{background:var(--cyan);box-shadow:0 0 6px var(--cyan);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* CLOCK */
+.clock-bar{text-align:center;margin-bottom:20px;}
+.clock-time{font-size:13px;font-family:'JetBrains Mono',monospace;color:var(--text3);letter-spacing:2px;}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;z-index:200;background:rgba(6,9,16,0.85);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.3s;display:flex;align-items:flex-end;justify-content:center;}
+.modal-bg.open{opacity:1;pointer-events:all}
+.modal{width:100%;max-width:400px;background:#0D1421;border:1px solid var(--border);border-bottom:none;border-radius:24px 24px 0 0;padding:28px 24px 48px;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);position:relative;box-shadow:0 -20px 60px rgba(0,0,0,0.5);}
+.modal-bg.open .modal{transform:translateY(0)}
+.modal-bar{width:36px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 24px;}
+.modal-x{position:absolute;top:20px;right:20px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid var(--border);cursor:pointer;color:var(--text2);font-size:14px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.modal-x:hover{background:rgba(255,255,255,0.1)}
+
+.step{display:none;animation:fadeUp 0.4s ease both;}
+.step.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.step-icon{font-size:40px;margin-bottom:12px;}
+.step-title{font-size:18px;font-weight:700;color:var(--text1);margin-bottom:6px;}
+.step-sub{font-size:13px;color:var(--text3);line-height:1.6;margin-bottom:24px;}
+
+/* STRENGTH */
+.strength-bar{height:3px;background:rgba(255,255,255,0.06);border-radius:2px;margin-top:8px;overflow:hidden;}
+.strength-fill{height:100%;width:0;border-radius:2px;transition:all 0.4s;}
+
+/* MODAL BTNS */
+.mbtn{width:100%;padding:13px;border-radius:12px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.25s;border:none;margin-top:10px;letter-spacing:0.5px;}
+.mbtn-primary{background:linear-gradient(135deg,#3B82F6,#22D3EE);color:#fff;box-shadow:0 4px 16px rgba(59,130,246,0.3);}
+.mbtn-primary:hover{box-shadow:0 6px 24px rgba(59,130,246,0.5)}
+.mbtn-primary:disabled{opacity:0.6;cursor:not-allowed}
+.mbtn-ghost{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text2);}
+.mbtn-ghost:hover{background:rgba(255,255,255,0.07)}
+
+/* TOAST */
+.toasts{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:999;width:calc(100% - 32px);max-width:380px;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.toast{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:toastIn 0.4s cubic-bezier(0.16,1,0.3,1) both;pointer-events:all;}
+@keyframes toastIn{from{opacity:0;transform:translateY(-16px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.toast.out{animation:toastOut 0.3s ease forwards}
+@keyframes toastOut{to{opacity:0;transform:translateY(-10px) scale(0.95)}}
+.toast.success{background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.25);}
+.toast.error{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);}
+.toast.info{background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.25);}
+.t-ico{font-size:18px;flex-shrink:0}
+.t-title{font-size:13px;font-weight:600;color:var(--text1);}
+.t-msg{font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+</style>
+</head>
+<body>
+<div class="bg">
+  <div class="bg-grad"></div>
+  <div class="bg-grid"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+</div>
+<div class="toasts" id="toasts"></div>
+
+<div class="wrapper">
+  <div class="logo-wrap">
+    <div class="logo-icon">⚙️</div>
+    <div class="logo-name">MAINTENANCEPRO</div>
+    <div class="logo-sub">FIELD MANAGEMENT SYSTEM</div>
+  </div>
+
+  <div class="clock-bar"><div class="clock-time" id="clock">--:--</div></div>
+
+  <div class="card">
+    <div class="card-title">Selamat Datang</div>
+    <div class="card-sub">Masuk ke sistem manajemen maintenance</div>
+
+    <div class="field">
+      <label class="field-label">Username</label>
+      <div class="field-inner">
+        <span class="field-ico">👤</span>
+        <input class="field-input" id="uname" type="text" placeholder="Masukkan username" autocomplete="username">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Password</label>
+      <div class="field-inner">
+        <span class="field-ico">🔒</span>
+        <input class="field-input" id="pass" type="password" placeholder="Masukkan password" autocomplete="current-password">
+        <button class="field-eye" id="eyeBtn" onclick="toggleEye()">👁</button>
+      </div>
+    </div>
+
+    <div class="extras">
+      <div class="remember" onclick="toggleRemember()">
+        <div class="check-box" id="remBox"></div>
+        <span class="remember-text">Ingat saya</span>
+      </div>
+      <button class="forgot" onclick="openReset()">Lupa Password?</button>
+    </div>
+
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">
+      <div class="btn-content">
+        <div class="btn-spinner" id="spinner"></div>
+        <span class="btn-text">Masuk Sistem</span>
+      </div>
+    </button>
+
+    <div class="status-bar">
+      <div class="status-dot"><div class="dot g"></div>SERVER</div>
+      <div class="status-dot"><div class="dot b"></div>DATABASE</div>
+      <div class="status-dot"><div class="dot c"></div>SYNC</div>
+    </div>
+  </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div class="modal-bg" id="resetModal">
+  <div class="modal">
+    <div class="modal-bar"></div>
+    <button class="modal-x" onclick="closeReset()">✕</button>
+
+    <div class="step active" id="s1">
+      <div class="step-icon">🔑</div>
+      <div class="step-title">Reset Password</div>
+      <div class="step-sub">Masukkan username untuk memulai proses reset.</div>
+      <div class="field">
+        <label class="field-label">Username</label>
+        <div class="field-inner">
+          <span class="field-ico">👤</span>
+          <input class="field-input" id="r_uname" type="text" placeholder="Username kamu">
+        </div>
+      </div>
+      <button class="mbtn mbtn-primary" onclick="verifyUser()">Verifikasi User</button>
+      <button class="mbtn mbtn-ghost" onclick="closeReset()">Batal</button>
+    </div>
+
+    <div class="step" id="s2">
+      <div class="step-icon">🛡️</div>
+      <div class="step-title">Password Baru</div>
+      <div class="step-sub">Buat password baru untuk akun <strong id="resetName" style="color:var(--cyan)"></strong>.</div>
+      <div class="field">
+        <label class="field-label">Password Baru</label>
+        <div class="field-inner">
+          <span class="field-ico">🔒</span>
+          <input class="field-input" id="r_np" type="password" placeholder="Min. 6 karakter" oninput="checkStr(this.value)">
+        </div>
+        <div class="strength-bar"><div class="strength-fill" id="strBar"></div></div>
+      </div>
+      <div class="field">
+        <label class="field-label">Konfirmasi Password</label>
+        <div class="field-inner">
+          <span class="field-ico">🔒</span>
+          <input class="field-input" id="r_cp" type="password" placeholder="Ulangi password baru">
+        </div>
+      </div>
+      <button class="mbtn mbtn-primary" id="savePwBtn" onclick="saveNewPass()">Simpan Password</button>
+    </div>
+
+    <div class="step" id="s3">
+      <div class="step-icon">✅</div>
+      <div class="step-title">Password Berhasil Diubah!</div>
+      <div class="step-sub">Password kamu sudah diperbarui. Silakan login dengan password baru.</div>
+      <button class="mbtn mbtn-primary" onclick="closeReset()">Kembali ke Login</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SHEET_ID  = '1VxB_-j1eLuOmZyYTn-J1cGJ6Hr5-u0t7YjzCYgQ_amA';
+const API_KEY   = 'AIzaSyC3hpXhh0q9yhUjyktMuOP5iVdMD291-C4';
+const SCRIPT_URL= 'https://script.google.com/macros/s/AKfycbxK2oBcVq3CJ3DBlzdeDGWtk_hPMuvMSes3O_VbXkIX6fseipRn1Dj7s5ru3gxX8dEO/exec';
+
+// SHA-256
+async function sha256(s){
+  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
+// Apps Script call — pakai URL params karena CORS
+async function callScript(data){
+  const params=new URLSearchParams();
+  Object.entries(data).forEach(([k,v])=>params.append(k,v));
+  const url=`${SCRIPT_URL}?${params.toString()}`;
+  const r=await fetch(url,{method:'GET',redirect:'follow'});
+  const t=await r.text();
+  try{return JSON.parse(t);}catch{return{success:true};}
+}
+
+// Fetch users
+async function fetchUsers(){
+  const url=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/USERS!A1:F300?key=${API_KEY}`;
+  const r=await fetch(url);
+  if(!r.ok)throw new Error('Gagal terhubung ke server');
+  const d=await r.json();
+  const rows=d.values||[];
+  if(rows.length<2)return[];
+  const h=rows[0].map(x=>x.trim().toUpperCase());
+  return rows.slice(1).map(r=>({
+    username: r[h.indexOf('USERNAME')]||'',
+    password: r[h.indexOf('PASSWORD')]||'',
+    role:     r[h.indexOf('ROLE')]||'User',
+    lastLogin:r[h.indexOf('LAST_LOGIN')]||'',
+    createdBy:r[h.indexOf('CREATED_BY')]||'',
+    updatedAt:r[h.indexOf('UPDATED_AT')]||'',
+  }));
+}
+
+// Clock
+function tick(){const n=new Date();document.getElementById('clock').textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')} WIB`;}
+tick();setInterval(tick,10000);
+
+// Toast
+function toast(type,title,msg,dur=3500){
+  const w=document.getElementById('toasts');
+  const d=document.createElement('div');
+  const icons={success:'✅',error:'❌',info:'ℹ️'};
+  d.className=`toast ${type}`;
+  d.innerHTML=`<span class="t-ico">${icons[type]||'ℹ️'}</span><div><div class="t-title">${title}</div>${msg?`<div class="t-msg">${msg}</div>`:''}</div>`;
+  w.appendChild(d);
+  setTimeout(()=>{d.classList.add('out');setTimeout(()=>d.remove(),300);},dur);
+}
+
+// Eye toggle
+let eyeOn=false;
+function toggleEye(){
+  eyeOn=!eyeOn;
+  document.getElementById('pass').type=eyeOn?'text':'password';
+  document.getElementById('eyeBtn').textContent=eyeOn?'🙈':'👁';
+}
+
+// Remember
+let rem=false;
+function toggleRemember(){
+  rem=!rem;
+  document.getElementById('remBox').classList.toggle('on',rem);
+}
+
+// Shake
+function shake(){
+  const c=document.querySelector('.card');
+  c.style.transform='translateX(-6px)';
+  setTimeout(()=>c.style.transform='translateX(6px)',80);
+  setTimeout(()=>c.style.transform='translateX(-4px)',160);
+  setTimeout(()=>c.style.transform='translateX(0)',240);
+}
+
+// LOGIN
+async function doLogin(){
+  const uname=document.getElementById('uname').value.trim();
+  const pass=document.getElementById('pass').value;
+  if(!uname||!pass){toast('error','Field Kosong','Username dan password wajib diisi.');shake();return;}
+  const btn=document.getElementById('loginBtn');
+  btn.disabled=true;btn.classList.add('loading');
+  try{
+    const hash=await sha256(pass);
+    const users=await fetchUsers();
+    const user=users.find(u=>u.username.toLowerCase()===uname.toLowerCase()&&u.password===hash);
+    if(user){
+      sessionStorage.setItem('mp_currentUser',JSON.stringify(user));
+      toast('success',`Selamat datang, ${user.username}!`,`Role: ${user.role}`);
+      document.querySelector('.card').style.borderColor='rgba(16,185,129,0.3)';
+      setTimeout(()=>location.href='dashboard.html',1500);
+    }else{
+      toast('error','Login Gagal','Username atau password salah.');
+      shake();
+      btn.disabled=false;btn.classList.remove('loading');
+    }
+  }catch(e){
+    toast('error','Koneksi Gagal',e.message);
+    shake();
+    btn.disabled=false;btn.classList.remove('loading');
+  }
+}
+
+// RESET MODAL
+let resetTarget=null;
+function openReset(){document.getElementById('resetModal').classList.add('open');goStep('s1');}
+function closeReset(){
+  document.getElementById('resetModal').classList.remove('open');
+  document.getElementById('r_uname').value='';
+  document.getElementById('r_np').value='';
+  document.getElementById('r_cp').value='';
+  document.getElementById('strBar').style.width='0';
+  resetTarget=null;
+}
+function goStep(id){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+async function verifyUser(){
+  const uname=document.getElementById('r_uname').value.trim();
+  if(!uname){toast('info','Perlu Username','Isi username terlebih dahulu.');return;}
+  try{
+    const users=await fetchUsers();
+    const found=users.find(u=>u.username.toLowerCase()===uname.toLowerCase());
+    if(found){
+      resetTarget=found;
+      document.getElementById('resetName').textContent=found.username;
+      goStep('s2');
+    }else{
+      toast('error','Tidak Ditemukan',`Username "${uname}" tidak ada.`);
+    }
+  }catch(e){toast('error','Gagal',e.message);}
+}
+
+function checkStr(v){
+  let s=0;
+  if(v.length>=6)s++;if(v.length>=10)s++;
+  if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^a-zA-Z0-9]/.test(v))s++;
+  const pct=(s/5)*100;
+  const cols=['#EF4444','#F97316','#F59E0B','#22D3EE','#10B981'];
+  const bar=document.getElementById('strBar');
+  bar.style.width=pct+'%';
+  bar.style.background=cols[Math.min(s-1,4)]||'#EF4444';
+}
+
+async function saveNewPass(){
+  const np=document.getElementById('r_np').value;
+  const cp=document.getElementById('r_cp').value;
+  if(!np||np.length<6){toast('error','Terlalu Pendek','Minimal 6 karakter.');return;}
+  if(np!==cp){toast('error','Tidak Cocok','Konfirmasi password berbeda.');return;}
+  const btn=document.getElementById('savePwBtn');
+  btn.disabled=true;btn.textContent='Menyimpan...';
+  try{
+    const hash=await sha256(np);
+    const now=new Date().toLocaleString('id-ID');
+    const result=await callScript({action:'resetPassword',username:resetTarget.username,newPasswordHash:hash,updatedAt:now});
+    if(result.success){
+      goStep('s3');
+      toast('success','Password Diubah!',`Akun "${resetTarget.username}" berhasil diperbarui.`);
+    }else{
+      throw new Error(result.message||'Gagal menyimpan');
+    }
+  }catch(e){
+    toast('error','Gagal Reset',e.message);
+    btn.disabled=false;btn.textContent='Simpan Password';
+  }
+}
+
+// Enter key
+document.getElementById('pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('uname').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('pass').focus();});
+document.getElementById('r_uname').addEventListener('keydown',e=>{if(e.key==='Enter')verifyUser();});
+</script>
+</body>
+</html>

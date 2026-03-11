@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hash Generator — MaintenancePro</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Exo 2',sans-serif;background:#04080F;color:#E8F4FF;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.card{background:rgba(10,20,40,0.9);border:1px solid rgba(0,212,255,0.2);border-radius:24px;padding:32px 28px;width:100%;max-width:420px;}
+.title{font-size:20px;font-weight:800;letter-spacing:2px;background:linear-gradient(90deg,#00D4FF,#0055FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;}
+.sub{font-size:11px;color:#3D5A7A;font-family:'JetBrains Mono',monospace;letter-spacing:1px;margin-bottom:28px;}
+label{font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;color:#3D5A7A;letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:8px;}
+.input-wrap{position:relative;margin-bottom:16px;}
+input[type=text],input[type=password]{
+  width:100%;padding:14px 48px 14px 16px;
+  background:rgba(5,15,30,0.8);border:1px solid rgba(0,212,255,0.15);
+  border-radius:12px;font-family:'Exo 2',sans-serif;font-size:15px;
+  color:#E8F4FF;outline:none;transition:border-color 0.3s;
+}
+input:focus{border-color:rgba(0,212,255,0.4)}
+input::placeholder{color:#3D5A7A}
+.eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none;}
+.btn{
+  width:100%;padding:15px;border-radius:12px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#0055FF,#00D4FF);
+  font-family:'Exo 2',sans-serif;font-size:14px;font-weight:700;
+  letter-spacing:2px;color:#fff;text-transform:uppercase;
+  box-shadow:0 4px 20px rgba(0,102,255,0.35);transition:all 0.3s;margin-bottom:20px;
+}
+.btn:hover{box-shadow:0 6px 28px rgba(0,102,255,0.5);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.result-box{display:none;background:rgba(0,0,0,0.4);border:1px solid rgba(0,212,255,0.2);border-radius:12px;padding:16px;}
+.result-label{font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;color:#3D5A7A;letter-spacing:2px;margin-bottom:10px;}
+.hash-val{font-family:'JetBrains Mono',monospace;font-size:12px;color:#00D4FF;word-break:break-all;line-height:1.6;margin-bottom:14px;}
+.copy-btn{
+  width:100%;padding:11px;border-radius:10px;border:1px solid rgba(0,212,255,0.3);
+  background:rgba(0,212,255,0.08);cursor:pointer;
+  font-family:'Exo 2',sans-serif;font-size:13px;font-weight:600;
+  color:#00D4FF;letter-spacing:1px;transition:all 0.2s;
+}
+.copy-btn:hover{background:rgba(0,212,255,0.15)}
+.copy-btn.copied{background:rgba(0,255,148,0.1);border-color:rgba(0,255,148,0.3);color:#00FF94;}
+.divider{height:1px;background:rgba(0,212,255,0.08);margin:20px 0;}
+.info{font-size:11px;color:#3D5A7A;font-family:'JetBrains Mono',monospace;line-height:1.8;text-align:center;}
+.info span{color:#7A9CC0;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="title">HASH GENERATOR</div>
+  <div class="sub">MAINTENANCE PRO · SHA-256 PASSWORD TOOL</div>
+
+  <label>Masukkan Password</label>
+  <div class="input-wrap">
+    <input type="password" id="passInput" placeholder="Ketik password di sini..." oninput="clearResult()">
+    <span class="eye" onclick="toggleEye()">👁</span>
+  </div>
+
+  <button class="btn" onclick="generateHash()">🔐 GENERATE HASH</button>
+
+  <div class="result-box" id="resultBox">
+    <div class="result-label">SHA-256 HASH — SALIN KE KOLOM PASSWORD DI GOOGLE SHEETS:</div>
+    <div class="hash-val" id="hashOutput">—</div>
+    <button class="copy-btn" id="copyBtn" onclick="copyHash()">📋 SALIN HASH</button>
+  </div>
+
+  <div class="divider"></div>
+  <div class="info">
+    Tool ini hanya untuk membuat hash password.<br>
+    <span>Hash tidak bisa dibalik ke password asli.</span><br>
+    Paste hash ke kolom PASSWORD di sheet USERS.
+  </div>
+</div>
+
+<script>
+async function sha256(msg){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function generateHash(){
+  const val=document.getElementById('passInput').value;
+  if(!val){
+    document.getElementById('passInput').style.borderColor='rgba(255,59,92,0.5)';
+    setTimeout(()=>document.getElementById('passInput').style.borderColor='',1500);
+    return;
+  }
+  const hash=await sha256(val);
+  document.getElementById('hashOutput').textContent=hash;
+  document.getElementById('resultBox').style.display='block';
+  document.getElementById('copyBtn').textContent='📋 SALIN HASH';
+  document.getElementById('copyBtn').classList.remove('copied');
+}
+
+function copyHash(){
+  const hash=document.getElementById('hashOutput').textContent;
+  navigator.clipboard.writeText(hash).then(()=>{
+    const btn=document.getElementById('copyBtn');
+    btn.textContent='✅ TERSALIN!';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='📋 SALIN HASH';btn.classList.remove('copied');},2500);
+  });
+}
+
+function clearResult(){
+  document.getElementById('resultBox').style.display='none';
+}
+
+let show=false;
+function toggleEye(){
+  show=!show;
+  document.getElementById('passInput').type=show?'text':'password';
+}
+
+document.getElementById('passInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter') generateHash();
+});
+</script>
+</body>
+</html>
