@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MaintenancePro</title>
+<meta http-equiv="refresh" content="0;url=maintenance-login.html">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#060910">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MaintenancePro">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#060910;display:flex;align-items:center;justify-content:center;height:100vh;font-family:'Inter',sans-serif;}
+.loader{text-align:center;}
+.spinner{width:40px;height:40px;border:3px solid rgba(34,211,238,0.15);border-top-color:#22D3EE;border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 16px;}
+@keyframes spin{100%{transform:rotate(360deg)}}
+p{color:#475569;font-size:12px;letter-spacing:2px;font-family:monospace;}
+</style>
+</head>
+<body>
+<div class="loader">
+  <div class="spinner"></div>
+  <p>LOADING...</p>
+</div>
+<script>
+setTimeout(()=>location.replace('maintenance-login.html'),300);
+</script>
+</body>
+</html>

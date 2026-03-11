@@ -1,0 +1,30 @@
+{
+  "name": "MaintenancePro",
+  "short_name": "MaintPro",
+  "description": "Field Maintenance Management System",
+  "start_url": "/Maintenancepro/maintenance-login.html",
+  "scope": "/Maintenancepro/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#060910",
+  "theme_color": "#060910",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/2699.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/2699.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/2699.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
