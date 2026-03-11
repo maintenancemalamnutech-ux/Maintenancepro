@@ -8,20 +8,16 @@
   "orientation": "portrait",
   "background_color": "#060910",
   "theme_color": "#060910",
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/2699.png",
-      "sizes": "72x72",
-      "type": "image/png"
-    },
-    {
-      "src": "https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/2699.png",
+      "src": "https://maintenancemalamnutech-ux.github.io/Maintenancepro/icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/2699.png",
+      "src": "https://maintenancemalamnutech-ux.github.io/Maintenancepro/icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
