@@ -25,6 +25,12 @@ p{color:#475569;font-size:12px;letter-spacing:2px;font-family:monospace;}
   <p>LOADING...</p>
 </div>
 <script>
+// Register Service Worker
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/Maintenancepro/sw.js')
+    .then(()=>console.log('SW registered'))
+    .catch(e=>console.log('SW error',e));
+}
 setTimeout(()=>location.replace('maintenance-login.html'),300);
 </script>
 </body>
